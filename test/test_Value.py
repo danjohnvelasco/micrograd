@@ -182,6 +182,7 @@ def test_exp_backward():
     
     assert abs(amg.grad - apt.grad.item()) < tol
 
+
 def test_backward():
     a = mg.Value(2.0, label='a')
     b = mg.Value(-3.0, label='b')
