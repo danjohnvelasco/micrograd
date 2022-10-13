@@ -1,0 +1,8 @@
+# running tests w/ coverage
+coverage run -m pytest test/
+
+# printing coverage results
+coverage report -m
+
+# run test and print coverage results in one line (Powershell)
+coverage run -m pytest test/; coverage report -m
