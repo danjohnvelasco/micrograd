@@ -1,6 +1,6 @@
 test/__pycache__
 micrograd/__pycache__
 micrograd/.pytest_cache
+micrograd/*.ipynb
 .pytest_cache
 .coverage
-micrograd/*.ipynb
