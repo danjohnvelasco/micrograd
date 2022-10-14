@@ -1,6 +1,6 @@
 try:
     import micrograd.engine as mg
-except ImportError:
+except ImportError: # pragma: no cover
     import sys
     sys.path.append(sys.path[0] + '/..')
     import micrograd.engine as mg
@@ -182,6 +182,32 @@ def test_exp_backward():
     
     assert abs(amg.grad - apt.grad.item()) < tol
 
+def test_relu():
+    a = mg.Value(5)
+    b = mg.Value(-0.27)
+    z1 = a.relu()
+    z2 = b.relu()
+
+    z1.backward()
+    z2.backward()
+
+    a.grad == 1
+    b.grad == 0
+
+
+def test_relu_backward():
+    a = -0.27
+    amg = mg.Value(a, label='a')
+    zmg= amg.relu()
+    zmg.backward()
+    
+    apt = torch.Tensor([a]).double(); apt.requires_grad=True
+    zpt = torch.relu(apt)
+    zpt.backward()
+
+    assert abs(amg.grad - apt.grad.item()) < tol
+
+    
 
 def test_backward():
     a = mg.Value(2.0, label='a')

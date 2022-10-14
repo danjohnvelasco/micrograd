@@ -1,6 +1,4 @@
 import math
-import numpy as np
-import random
 
 class Value:
     def __init__(self, data, _children=(), _op='', label=''):
@@ -13,7 +11,7 @@ class Value:
         self._backward = lambda: None
     
     def __repr__(self): # pragma: no cover
-        return f"Value(data={self.data})"
+        return f"Value(data={self.data}, grad={self.grad})"
     
     def __add__(self, other):
         other = other if isinstance(other, Value) else Value(other) # if not a Value object, convert to Value object
@@ -92,13 +90,29 @@ class Value:
 
         return out
     
-    def pow(self, other):
+    def pow(self, other): # alias for ** or __pow__
+        return self ** other
+        
+    def __pow__(self, other):
         assert isinstance(other, (int, float)), "pow() only supports int or float"
         out = Value(self.data ** other, (self,), _op='pow')
 
         def _backward():
             self.grad += (other * self.data ** (other-1)) * out.grad
 
+        out._backward = _backward
+
+        return out
+    
+    def relu(self):
+        out = Value(max(0, self.data), (self,), _op='relu')
+
+        def _backward():
+            if out.data > 0:
+                self.grad += 1.0 * out.grad
+            elif out.data == 0:
+                self.grad += 0.0 * out.grad
+        
         out._backward = _backward
 
         return out
@@ -122,51 +136,3 @@ class Value:
         
         for node in reversed(topo):
             node._backward()
-
-class Neuron:
-    def __init__(self, nin):
-        self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
-        self.b = Value(random.uniform(-1,1))
-    
-    def __repr__(self):
-        return f"weights: {self.w}\nbias: {self.b}\nshape: {len(self.w)}"
-
-    def __call__(self, x_inputs):
-        acts = sum([w*x for w, x in zip(self.w, x_inputs)], self.b)
-        out = acts.tanh()
-
-        return out
-
-class Layer:
-    def __init__(self, nin, nout):
-        self.neurons = [Neuron(nin) for _ in range(nout)]
-    # 
-    def __repr__(self):
-        return f"neurons: {self.neurons}"
-
-    def __call__(self, x_inputs):
-        outs = [n(x_inputs) for n in self.neurons]
-        return outs[0] if len(outs) == 1 else outs
-
-class MLP:
-    def __init__(self, nin, nouts):
-        """
-            nin: integer
-            nouts: List[int]
-        """
-        sz = [nin] + nouts 
-        self.layers = [Layer(sz[i], sz[i+1]) for i in range(len(nouts))]
-    
-    def __call__(self, x_inputs):
-        # My version
-        out = self.layers[0](x_inputs) # input layer
-
-        for layer_idx in range(1, len(self.layers)):
-            out = self.layers[layer_idx](out)
-
-        # # Karpathy's version
-        # for layer in self.layers:
-        #     x_inputs = layer(x_inputs)
-
-            
-        return out
