@@ -1,6 +1,6 @@
 # micrograd
 
-This is the output from [Andrej Karpathy's lecture](https://www.youtube.com/watch?v=VMj-3S1tku0).
+This is the output from [Andrej Karpathy's lecture](https://youtu.be/VMj-3S1tku0).
 
 ## Run demo
 ```
