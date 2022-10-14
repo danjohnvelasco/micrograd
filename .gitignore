@@ -1,0 +1,5 @@
+test/__pycache__
+micrograd/__pycache__
+micrograd/.pytest_cache
+.pytest_cache
+.coverage
